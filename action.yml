@@ -1,4 +1,4 @@
-name: 'Slither Static Analysis'
+name: 'Slither Action'
 description: 'Runs Slither, the Solidity static analyzer.'
 inputs:
   solc-version:
