@@ -1,0 +1,35 @@
+name: 'Slither Static Analysis'
+description: 'Runs Slither, the Solidity static analyzer.'
+inputs:
+  solc-version:
+    description: 'The version of solc to use. Should be autodetected, but may be specified manually.'
+  node-version:
+    description: 'The version of node to use.'
+  target:
+    description: 'The path of the project that Slither should analyze, relative to the repo root.'
+    default: .
+    type: string
+  sarif:
+    description: 'If provided, the path of the SARIF file to produce, relative to the repo root.'
+  slither-args:
+    description: 'Extra arguments to pass to Slither.'
+  slither-config:
+    description: 'The path to the Slither configuration file. By default, `./slither.config.json` is used if present.'
+  slither-version:
+    description: 'The version of slither-analyzer to use. By default, the latest release in PyPI is used.'
+  ignore-compile:
+    description: 'Whether to ignore the compilation step when running crytic-compile and Slither.'
+    default: false
+    type: boolean
+outputs:
+  sarif:
+    description: 'If produced, the path of the SARIF file, relative to the repo root.'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.target }}
+    - ${{ inputs.solc-version }}
+    - ${{ inputs.node-version }}
+    - ${{ inputs.sarif }}
+    - ${{ inputs.slither-version }}
