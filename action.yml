@@ -33,3 +33,6 @@ runs:
     - ${{ inputs.node-version }}
     - ${{ inputs.sarif }}
     - ${{ inputs.slither-version }}
+branding:
+  icon: 'shield'  
+  color: 'red'
