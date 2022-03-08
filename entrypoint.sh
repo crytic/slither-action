@@ -56,8 +56,12 @@ install_node()
     fi
     bash nvm-install.sh
     rm nvm-install.sh
+
+    # Avoid picking up `.nvmrc` from the repository
+    pushd / >/dev/null
     . ~/.nvm/nvm.sh
     nvm install "$NODEVER"
+    popd >/dev/null
 }
 
 install_slither()
