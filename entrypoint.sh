@@ -141,8 +141,6 @@ if [[ -n "$SLITHERCONF" ]]; then
     CONFIGFLAG="--config-file=$SLITHERCONF"
 fi
 
-crytic-compile "$TARGET" $IGNORECOMPILEFLAG
-
 if [[ -z "$SLITHERARGS" ]]; then
     slither "$TARGET" $SARIFFLAG $IGNORECOMPILEFLAG $CONFIGFLAG
 else
