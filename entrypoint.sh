@@ -64,6 +64,25 @@ install_node()
     popd >/dev/null
 }
 
+install_foundry()
+{
+    if [[ -d "$TARGET" ]] && [[ -f "$TARGET/foundry.toml" ]]; then
+        echo "[-] Foundry target detected, installing foundry nightly"
+
+        wget -q -O foundryup https://raw.githubusercontent.com/foundry-rs/foundry/36a66c857ff148f6ed007cdcd3402077de3595cf/foundryup/foundryup
+        if [ ! "c0c6711dc39deae65bebcc0320fec1265930895a527e18daa643a708218c07ae  foundryup" = "$(sha256sum foundryup)" ]; then
+            echo "Foundry installer does not match expected checksum! exiting"
+            exit 1
+        fi
+
+        export FOUNDRY_DIR="/opt/foundry"
+        export PATH="$FOUNDRY_DIR/bin:$PATH"
+        mkdir -p "$FOUNDRY_DIR/bin" "$FOUNDRY_DIR/share/man/man1"
+        bash foundryup
+        rm foundryup
+    fi
+}
+
 install_slither()
 {
     SLITHERPKG="slither-analyzer"
@@ -113,6 +132,14 @@ install_deps()
             echo "[-] Did not find a requirements.txt, proceeding without installing Python dependencies."
         fi
 
+        # Foundry dependencies
+        if [[ -f foundry.toml ]]; then
+            echo "[-] Installing dependencies from foundry.toml"
+            forge install
+        else
+            echo "[-] Did not find a foundry.toml, proceeding without installing Foundry dependencies."
+        fi
+
         popd >/dev/null
     fi
 }
@@ -123,6 +150,7 @@ IGNORECOMPILEFLAG=
 if [[ -z "$IGNORECOMPILE" || $IGNORECOMPILE =~ ^[Ff]alse$ ]]; then
     install_solc
     install_node
+    install_foundry
     install_deps
 else
     IGNORECOMPILEFLAG="--ignore-compile"
