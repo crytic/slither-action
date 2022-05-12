@@ -22,7 +22,7 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: crytic/slither-action@v0.1.1
 ```
 
@@ -78,7 +78,7 @@ jobs:
           sarif: results.sarif
 
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v1
+        uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: ${{ steps.slither.outputs.sarif }}
 ```
@@ -104,7 +104,7 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: crytic/slither-action@v0.1.1
         with:
           target: 'src/'
@@ -139,7 +139,7 @@ jobs:
       security-events: write
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Run Slither
       uses: crytic/slither-action@v0.1.1
@@ -150,7 +150,7 @@ jobs:
         sarif: results.sarif
 
     - name: Upload SARIF file
-      uses: github/codeql-action/upload-sarif@v1
+      uses: github/codeql-action/upload-sarif@v2
       with:
         sarif_file: ${{ steps.slither.outputs.sarif }}
 ```
@@ -184,7 +184,7 @@ jobs:
       security-events: write
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Run Slither
       uses: crytic/slither-action@v0.1.1
@@ -194,7 +194,7 @@ jobs:
         sarif: results.sarif
 
     - name: Upload SARIF file
-      uses: github/codeql-action/upload-sarif@v1
+      uses: github/codeql-action/upload-sarif@v2
       with:
         sarif_file: ${{ steps.slither.outputs.sarif }}
 ```
@@ -229,7 +229,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
           submodules: recursive
 
