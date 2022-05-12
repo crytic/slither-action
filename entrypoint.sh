@@ -15,6 +15,16 @@ SLITHERARGS="$(get INPUT_SLITHER-ARGS)"
 SLITHERCONF="$(get INPUT_SLITHER-CONFIG)"
 IGNORECOMPILE="$(get INPUT_IGNORE-COMPILE)"
 
+compatibility_link()
+{
+    HOST_GITHUB_WORKSPACE="$(get INPUT_INTERNAL-GITHUB-WORKSPACE | tr -d \")"
+    if [[ -d "$GITHUB_WORKSPACE" ]]; then
+        mkdir -p "$(dirname "$HOST_GITHUB_WORKSPACE")"
+        ln -s "$GITHUB_WORKSPACE" "$HOST_GITHUB_WORKSPACE"
+        echo "[-] Applied compatibility link: $HOST_GITHUB_WORKSPACE -> $GITHUB_WORKSPACE"
+    fi
+}
+
 install_solc()
 {
     if [[ -z "$SOLCVER" ]]; then
@@ -153,6 +163,7 @@ if [[ -z "$IGNORECOMPILE" || $IGNORECOMPILE =~ ^[Ff]alse$ ]]; then
     install_foundry
     install_deps
 else
+    compatibility_link
     IGNORECOMPILEFLAG="--ignore-compile"
 fi
 

@@ -21,6 +21,12 @@ inputs:
     description: 'Whether to ignore the compilation step when running crytic-compile and Slither.'
     default: false
     type: boolean
+  internal-github-workspace:
+    # Do not set manually. This is a hacky way to pass the host workspace path to inside the action
+    # This is used to improve compatibility when using `ignore-compile`.
+    # GitHub rewrites the argument if it is passed directly, so we use toJSON to "transform"
+    # it and avoid the remapping done by GitHub Actions.
+    default: ${{ toJSON(github.workspace) }}
 outputs:
   sarif:
     description: 'If produced, the path of the SARIF file, relative to the repo root.'
