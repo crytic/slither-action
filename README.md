@@ -41,7 +41,7 @@ jobs:
 
 ## Advanced compilation
 
-If the project require advanced compilation setting, set `ignore-compile` to true and follow the compilation steps before running slither. See the [examples](#examples) section.
+If the project requires advanced compilation setting, set `ignore-compile` to true and follow the compilation steps before running slither. See the [examples](#examples) section.
 
 ## Triaging results
 
