@@ -13,6 +13,7 @@ SARIFOUT="$4"
 SLITHERVER="$5"
 SLITHERARGS="$(get INPUT_SLITHER-ARGS)"
 SLITHERCONF="$(get INPUT_SLITHER-CONFIG)"
+STDOUTFILE="/tmp/slither-stdout"
 IGNORECOMPILE="$(get INPUT_IGNORE-COMPILE)"
 
 compatibility_link()
@@ -181,8 +182,15 @@ if [[ -n "$SLITHERCONF" ]]; then
 fi
 
 if [[ -z "$SLITHERARGS" ]]; then
-    slither "$TARGET" $SARIFFLAG $IGNORECOMPILEFLAG $CONFIGFLAG
+    slither "$TARGET" $SARIFFLAG $IGNORECOMPILEFLAG $CONFIGFLAG | tee "$STDOUTFILE"
 else
     echo "[-] SLITHERARGS provided. Running slither with extra arguments"
-    printf "%s\n" "$SLITHERARGS" | xargs slither "$TARGET" $SARIFFLAG $IGNORECOMPILEFLAG $CONFIGFLAG
+    printf "%s\n" "$SLITHERARGS" | xargs slither "$TARGET" $SARIFFLAG $IGNORECOMPILEFLAG $CONFIGFLAG | tee "$STDOUTFILE"
 fi
+
+# https://github.community/t/set-output-truncates-multiline-strings/16852/3
+STDOUT="$(< $STDOUTFILE)"
+STDOUT="${STDOUT//'%'/'%25'}"
+STDOUT="${STDOUT//$'\n'/'%0A'}"
+STDOUT="${STDOUT//$'\r'/'%0D'}"
+echo "::set-output name=stdout::$STDOUT"

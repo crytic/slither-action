@@ -30,6 +30,8 @@ inputs:
 outputs:
   sarif:
     description: 'If produced, the path of the SARIF file, relative to the repo root.'
+  stdout:
+    description: 'Standard output from Slither. Works well when passing `--checklist` in slither-args.'
 runs:
   using: 'docker'
   image: 'Dockerfile'
