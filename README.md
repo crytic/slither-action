@@ -258,3 +258,78 @@ jobs:
       with:
         ignore-compile: true
 ```
+
+## Example workflow: markdown report
+
+The following GitHub Actions workflow example will create/update pull requests
+with the contents of Slither's markdown report. Useful for when [GitHub Advanced
+Security](https://docs.github.com/en/get-started/learning-about-github/about-github-advanced-security)
+(required for the SARIF feature) is unavailable.
+
+```yaml
+name: Slither Analysis
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Run Slither
+      uses: crytic/slither-action@main
+      continue-on-error: true
+      id: slither
+      with:
+        node-version: 16
+        slither-args: --checklist --markdown-root ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}/
+
+    - name: Create/update checklist as PR comment
+      uses: actions/github-script@v5.1.0
+      if: github.event_name == 'pull_request'
+      with:
+        script: |
+          const script = require('.github/scripts/comment')
+          const header = '# Slither report'
+          const body = `${{ steps.slither.outputs.stdout }}`
+          await script({ github, context, header, body })
+```
+
+`.github/scripts/comment.js`:
+
+```js
+module.exports = async ({ github, context, header, body }) => {
+  const comment = [header, body].join("\n");
+
+  const { data: comments } = await github.rest.issues.listComments({
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    issue_number: context.payload.number,
+  });
+
+  const botComment = comments.find(
+    (comment) =>
+      // github-actions bot user
+      comment.user.id === 41898282 && comment.body.startsWith(header)
+  );
+
+  const commentFn = botComment ? "updateComment" : "createComment";
+
+  await github.rest.issues[commentFn]({
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    body: comment,
+    ...(botComment
+      ? { comment_id: botComment.id }
+      : { issue_number: context.payload.number }),
+  });
+};
+```
