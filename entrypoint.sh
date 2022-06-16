@@ -32,16 +32,22 @@ install_solc()
 
         if [[ -f "$TARGET" ]]; then
             SOLCVER="$(grep --no-filename '^pragma solidity' "$TARGET" | cut -d' ' -f3)"
-        else
+        elif [[ -d "$TARGET" ]]; then
             pushd "$TARGET" >/dev/null
             SOLCVER="$(grep --no-filename '^pragma solidity' -r --include \*.sol --exclude-dir node_modules | \
                        cut -d' ' -f3 | sort | uniq -c | sort -n | tail -1 | tr -s ' ' | cut -d' ' -f3)"
             popd >/dev/null
+        else
+            echo "[-] Target is neither a file nor a directory, assuming it is a path glob"
+            SOLCVER="$( while read -r file; do
+                            grep --no-filename '^pragma solidity' -r "$file" ; \
+                        done < <(compgen -G "$TARGET" || true) | \
+                        cut -d' ' -f3 | sort | uniq -c | sort -n | tail -1 | tr -s ' ' | cut -d' ' -f3)"
         fi
         SOLCVER="$(echo "$SOLCVER" | sed 's/[^0-9\.]//g')"
 
         if [[ -z "$SOLCVER" ]]; then
-        # Fallback to latest version if the above fails.
+            # Fallback to latest version if the above fails.
             SOLCVER="$(solc-select install | tail -1)"
         fi
 
