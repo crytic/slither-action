@@ -39,10 +39,9 @@ install_solc()
             popd >/dev/null
         else
             echo "[-] Target is neither a file nor a directory, assuming it is a path glob"
-            SOLCVER="$( while read -r file; do
+            SOLCVER="$( shopt -s globstar; for file in $TARGET; do
                             grep --no-filename '^pragma solidity' -r "$file" ; \
-                        done < <(compgen -G "$TARGET" || true) | \
-                        cut -d' ' -f3 | sort | uniq -c | sort -n | tail -1 | tr -s ' ' | cut -d' ' -f3)"
+                        done | cut -d' ' -f3 | sort | uniq -c | sort -n | tail -1 | tr -s ' ' | cut -d' ' -f3)"
         fi
         SOLCVER="$(echo "$SOLCVER" | sed 's/[^0-9\.]//g')"
 
