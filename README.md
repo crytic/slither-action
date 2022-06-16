@@ -54,10 +54,10 @@ The action supports the Github Code Scanning integration, which will push slithe
 ## Code Scanning preview
 
 ### Findings Summary
-<img src="./images/summary.png" alt="Summary" width="500"/>
+<img src="https://raw.githubusercontent.com/crytic/slither-action/68ad2434d613601b79da77aeb6b3bb04024d3d10/images/summary.png" alt="Summary" width="500"/>
 
 ### Findings Details
-<img src="./images/details.png" alt="Summary" width="500"/>
+<img src="https://raw.githubusercontent.com/crytic/slither-action/68ad2434d613601b79da77aeb6b3bb04024d3d10/images/details.png" alt="Summary" width="500"/>
 
 ## How to use
 
