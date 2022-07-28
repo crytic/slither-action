@@ -13,6 +13,7 @@ SARIFOUT="$4"
 SLITHERVER="$5"
 SLITHERARGS="$(get INPUT_SLITHER-ARGS)"
 SLITHERCONF="$(get INPUT_SLITHER-CONFIG)"
+SLITHERPLUGINS="$(get INPUT_SLITHER-PLUGINS)"
 IGNORECOMPILE="$(get INPUT_IGNORE-COMPILE)"
 
 compatibility_link()
@@ -110,6 +111,13 @@ install_slither()
     export PATH="/opt/slither/bin:$PATH"
     pip3 install wheel
     pip3 install "$SLITHERPKG"
+
+    if [[ -n "$SLITHERPLUGINS" ]]; then
+        echo "[-] Slither plugins provided, installing them"
+        pushd "$(dirname "$SLITHERPLUGINS")" >/dev/null
+        pip3 install -r "$(basename "$SLITHERPLUGINS")"
+        popd >/dev/null
+    fi
 }
 
 install_deps()
