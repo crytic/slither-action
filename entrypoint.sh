@@ -15,6 +15,11 @@ SLITHERARGS="$(get INPUT_SLITHER-ARGS)"
 SLITHERCONF="$(get INPUT_SLITHER-CONFIG)"
 IGNORECOMPILE="$(get INPUT_IGNORE-COMPILE)"
 
+# #19 - an user may set SOLC_VERSION in the workflow and cause problems here.
+# Make sure it's unset. If you need to use a different solc version, override
+# it with the `solc-version` action option.
+unset SOLC_VERSION
+
 compatibility_link()
 {
     HOST_GITHUB_WORKSPACE="$(get INPUT_INTERNAL-GITHUB-WORKSPACE | tr -d \")"
