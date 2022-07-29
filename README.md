@@ -50,7 +50,7 @@ Slither. You can find an example workflow that uses this option in the
 ### Triaging results
 
 Add `// slither-disable-next-line DETECTOR_NAME` before the finding, or use the
-[Github Code Scanning integration](github-code-scanning-integration).
+[Github Code Scanning integration](#github-code-scanning-integration).
 
 ## Github Code Scanning integration
 
