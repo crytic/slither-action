@@ -42,15 +42,23 @@ jobs:
 
 ### Advanced compilation
 
-If the project requires advanced compilation settings or steps, set `ignore-compile` to true and follow the compilation steps before running Slither. You can find an example workflow that uses this option in the [examples](#examples) section.
+If the project requires advanced compilation settings or steps, set
+`ignore-compile` to true and follow the compilation steps before running
+Slither. You can find an example workflow that uses this option in the
+[examples](#examples) section.
 
 ### Triaging results
 
-Add `//slither-disable-next-line DETECTOR_NAME` before the finding, or use the [Github Code Scanning integration](github-code-scanning-integration).
+Add `// slither-disable-next-line DETECTOR_NAME` before the finding, or use the
+[Github Code Scanning integration](github-code-scanning-integration).
 
 ## Github Code Scanning integration
 
-The action supports the Github Code Scanning integration, which will push Slither's alerts to the Security tab of the Github project (see [About code scanning](https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/about-code-scanning)). This integration eases the triaging of findings and improves the continuous integration.
+The action supports the Github Code Scanning integration, which will push
+Slither's alerts to the Security tab of the Github project (see [About code
+scanning](https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/about-code-scanning)).
+This integration eases the triaging of findings and improves the continuous
+integration.
 
 ### Code Scanning preview
 
@@ -209,15 +217,15 @@ The following is a complete GitHub Actions workflow example meant to illustrate
 the usage of the Slither action when the compilation framework is not based on
 Node or Python. It will trigger with commits on `main` as well as any pull
 request opened against the `main` branch. To be able to build the project, it
-will configure Node and Nix on the runner and install project dependencies.
-Once the environment is ready, it will build the project (using `make build` via
+will configure Node and Nix on the runner and install project dependencies. Once
+the environment is ready, it will build the project (using `make build` via
 `nix-shell`) and finally run Slither on the project using the GitHub action.
 
-In this example, we leverage `ignore-compile` to avoid building the
-project as part of the Slither action execution. Slither will expect the project
-to be pre-built when this option is set. This allows us to use compilation
-frameworks that are not Node or Python-based, such as Dapp, together with the
-Slither action.
+In this example, we leverage `ignore-compile` to avoid building the project as
+part of the Slither action execution. Slither will expect the project to be
+pre-built when this option is set. This allows us to use compilation frameworks
+that are not Node or Python-based, such as Dapp, together with the Slither
+action.
 
 ```yaml
 name: Slither Analysis
