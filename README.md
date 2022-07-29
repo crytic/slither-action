@@ -37,12 +37,12 @@ jobs:
 | `slither-args`   | Extra arguments to pass to Slither.
 | `slither-config` | The path to the Slither configuration file. By default, `./slither.config.json` is used if present. See [Configuration file](https://github.com/crytic/slither/wiki/Usage#configuration-file).
 | `slither-version`| The version of slither-analyzer to use. By default, the latest release in PyPI is used.
-| `solc-version`   | The version of `solc` to use. If this field is not set, the version will be guessed from project metadata. **This only has an effect if you are not using a compilation framework for your project** -- i.e. if `target` is a standalone `.sol` file.
-| `target`         | The path to the root of the project to be analyzed by Slither. Can be a directory or a file. Defaults to the repo root.
+| `solc-version`   | The version of `solc` to use. If this field is not set, the version will be guessed from project metadata. **This only has an effect if you are not using a compilation framework for your project** -- i.e., if `target` is a standalone `.sol` file.
+| `target`         | The path to the root of the project to be analyzed by Slither. It can be a directory or a file, and it defaults to the repo root.
 
 ### Advanced compilation
 
-If the project requires advanced compilation settings or steps, set `ignore-compile` to true and follow the compilation steps before running slither. You can find an example workflow using this option in the [examples](#examples) section.
+If the project requires advanced compilation settings or steps, set `ignore-compile` to true and follow the compilation steps before running Slither. You can find an example workflow that uses this option in the [examples](#examples) section.
 
 ### Triaging results
 
@@ -50,7 +50,7 @@ Add `//slither-disable-next-line DETECTOR_NAME` before the finding, or use the [
 
 ## Github Code Scanning integration
 
-The action supports the Github Code Scanning integration, which will push slither's alerts to the Security tab of the Github project (see [About code scanning](https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/about-code-scanning)). This integration eases the triaging of findings and improves the continuous integration.
+The action supports the Github Code Scanning integration, which will push Slither's alerts to the Security tab of the Github project (see [About code scanning](https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/about-code-scanning)). This integration eases the triaging of findings and improves the continuous integration.
 
 ### Code Scanning preview
 
@@ -88,7 +88,7 @@ jobs:
 
 Here:
 
-- `continue-on-error: true` is required to let the SARIF upload step run if slither finds issues
+- `continue-on-error: true` is required to let the SARIF upload step run if Slither finds issues
 - `id: slither` is the name used to reference the step later on (e.g., in `steps.slither.outputs.sarif`)
 
 ## Examples
@@ -117,13 +117,13 @@ jobs:
 ### Example workflow: Hardhat and SARIF
 
 The following is a complete GitHub Actions workflow example. It will trigger
-with commits on `master` as well as any pull request opened against the `master`
+with commits on `main` as well as any pull request opened against the `main`
 branch. It leverages the NodeJS integration in the Slither action to set up
 NodeJS 16.x and install project dependencies before running Slither on the
 project. Slither will output findings in SARIF format, and those will get
 uploaded to GitHub.
 
-We include `continue-on-error: true` on the Slither action, to avoid failing the
+We include `continue-on-error: true` on the Slither action to avoid failing the
 run if findings are found.
 
 ```yaml
@@ -131,9 +131,9 @@ name: Slither Analysis
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   analyze:
@@ -162,13 +162,13 @@ jobs:
 ### Example workflow: Brownie and SARIF
 
 The following is a complete GitHub Actions workflow example. It will trigger
-with commits on `master` as well as any pull request opened against the `master`
+with commits on `main` as well as any pull request opened against the `main`
 branch. It leverages the Python integration in the Slither action to set up a
 virtual environment and install project dependencies before running Slither on
 the project. Slither will output findings in SARIF format, and those will get
 uploaded to GitHub.
 
-We also include `continue-on-error: true` on the Slither action, to avoid
+We also include `continue-on-error: true` on the Slither action to avoid
 failing the run if findings are found.
 
 ```yaml
@@ -176,9 +176,9 @@ name: Slither Analysis
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   analyze:
@@ -205,18 +205,18 @@ jobs:
 
 ### Example workflow: Dapp
 
-The following is a complete GitHub Actions workflow example, meant to illustrate
+The following is a complete GitHub Actions workflow example meant to illustrate
 the usage of the Slither action when the compilation framework is not based on
-Node or Python. It will trigger with commits on `master` as well as any pull
-request opened against the `master` branch. To be able to build the project, it
-will configure Node and Nix on the runner, and install project dependencies.
+Node or Python. It will trigger with commits on `main` as well as any pull
+request opened against the `main` branch. To be able to build the project, it
+will configure Node and Nix on the runner and install project dependencies.
 Once the environment is ready, it will build the project (using `make build` via
 `nix-shell`) and finally run Slither on the project using the GitHub action.
 
-In this example, we are leveraging `ignore-compile` to avoid building the
+In this example, we leverage `ignore-compile` to avoid building the
 project as part of the Slither action execution. Slither will expect the project
 to be pre-built when this option is set. This allows us to use compilation
-frameworks which are not Node or Python-based, such as Dapp, together with the
+frameworks that are not Node or Python-based, such as Dapp, together with the
 Slither action.
 
 ```yaml
@@ -224,9 +224,9 @@ name: Slither Analysis
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   analyze:
