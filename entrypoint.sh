@@ -123,6 +123,8 @@ install_deps()
         elif [[ -f pnpm-lock.yaml ]]; then
             echo "[-] Installing dependencies from pnpm-lock.yaml"
             npm install -g pnpm
+            mkdir .pnpm-store
+            pnpm config set store-dir .pnpm-store
             pnpm install --frozen-lockfile
         elif [[ -f package.json ]]; then
             echo "[-] Did not detect a package-lock.json, yarn.lock, or pnpm-lock.yaml in $TARGET, consider locking your dependencies!"
