@@ -32,7 +32,7 @@ jobs:
 | Key              | Description
 |------------------|------------
 | `ignore-compile` | If set to true, the Slither action will not attempt to compile the project. False by default. See [Advanced compilation](#advanced-compilation).
-| `ignore-compile` | Cause the action to fail if Slither finds any issue of this severity or higher. See [action fail behavior](#action-fail-behavior).
+| `fail-on`        | Cause the action to fail if Slither finds any issue of this severity or higher. See [action fail behavior](#action-fail-behavior).
 | `node-version`   | The version of `node` to use. If this field is not set, the latest version will be used.
 | `sarif`          | If provided, the path of the SARIF file to produce, relative to the repo root (see [Github Code Scanning integration](#github-code-scanning-integration)).
 | `slither-args`   | Extra arguments to pass to Slither.
@@ -50,16 +50,19 @@ Slither. You can find an example workflow that uses this option in the
 
 ### Action fail behavior
 
-The Slither action supports a `fail-on` option, based on the `--fail-*` flags added in Slither 0.8.4. To maintain the current action behavior, this option defaults to `all`. The following table summarizes the action behavior across different Slither versions. You 
-may adjust this option as needed for your workflows. If you are setting these options on your config file, set `fail-on: config` to prevent the action from overriding your settings.
-
+The Slither action supports a `fail-on` option, based on the `--fail-*` flags
+added in Slither 0.8.4. To maintain the current action behavior, this option
+defaults to `all`. The following table summarizes the action behavior across
+different Slither versions. You may adjust this option as needed for your
+workflows. If you are setting these options on your config file, set `fail-on:
+config` to prevent the action from overriding your settings.
 
 | `fail-on`          | Slither <= 0.8.3          | Slither > 0.8.3
-|--------------------]---------------------------|--------
-| `all` / `pedantic` | Fail on any finding       | Fail on any finding 
+|--------------------|---------------------------|----------------
+| `all` / `pedantic` | Fail on any finding       | Fail on any finding
 | `low`              | Fail on any finding       | Fail on any finding >= low
 | `medium`           | Fail on any finding       | Fail on any finding >= medium
-| `high`             | Fail on any finding       | Fail on any finding >- high
+| `high`             | Fail on any finding       | Fail on any finding >= high
 | `none`             | Do not fail on findings   | Do not fail on findings
 | `config`           | Determined by config file | Determined by config file
 
