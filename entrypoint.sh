@@ -60,6 +60,7 @@ fail_on_flags()
         # newer behavior - does not fail on findings by default
         case "$FAIL_ON_LEVEL" in
             all|pedantic)
+                # default behavior on slither >= 0.8.4
                 echo "--fail-pedantic"
                 ;;
             low)
@@ -72,7 +73,7 @@ fail_on_flags()
                 echo "--fail-high"
                 ;;
             none)
-                # default behavior
+                echo "--no-fail-pedantic"
                 ;;
             *)
                 echo "[!] Unknown fail-on value $FAIL_ON_LEVEL, ignoring" >&2
