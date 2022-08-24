@@ -107,7 +107,13 @@ install_slither()
 {
     SLITHERPKG="slither-analyzer"
     if [[ -n "$SLITHERVER" ]]; then
-        SLITHERPKG="slither-analyzer==$SLITHERVER"
+        if [[ "$SLITHERVER" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            # PyPI release
+            SLITHERPKG="slither-analyzer==$SLITHERVER"
+        else
+            # GitHub reference (tag, branch, commit hash)
+            SLITHERPKG="slither-analyzer @ https://github.com/crytic/slither/archive/$SLITHERVER.tar.gz"
+        fi
         echo "[-] SLITHERVER provided, installing $SLITHERPKG"
     fi
 
