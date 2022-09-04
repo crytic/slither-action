@@ -120,6 +120,10 @@ install_deps()
             echo "[-] Installing dependencies from yarn.lock"
             npm install -g yarn
             yarn install --frozen-lockfile
+        elif [[ -f pnpm-lock.yaml ]]; then
+            echo "[-] Installing dependencies from pnpm-lock-yaml"
+            npm install -g pnpm
+            pnpm install
         elif [[ -f package.json ]]; then
             echo "[-] Did not detect a package-lock.json or yarn.lock in $TARGET, consider locking your dependencies!"
             echo "[-] Proceeding with 'npm i' to install dependencies"
