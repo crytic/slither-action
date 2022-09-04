@@ -125,7 +125,7 @@ install_deps()
             npm install -g pnpm
             pnpm install
         elif [[ -f package.json ]]; then
-            echo "[-] Did not detect a package-lock.json or yarn.lock in $TARGET, consider locking your dependencies!"
+            echo "[-] Did not detect a package-lock.json or yarn.lock or pnpm-lock.yaml in $TARGET, consider locking your dependencies!"
             echo "[-] Proceeding with 'npm i' to install dependencies"
             npm i
         else
