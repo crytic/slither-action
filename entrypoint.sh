@@ -39,7 +39,7 @@ install_solc()
             SOLCVER="$(grep --no-filename '^pragma solidity' "$TARGET" | cut -d' ' -f3)"
         elif [[ -d "$TARGET" ]]; then
             pushd "$TARGET" >/dev/null
-            SOLCVER="$(grep --no-filename '^pragma solidity' -r --include \*.sol --exclude-dir node_modules | \
+            SOLCVER="$(grep --no-filename '^pragma solidity' -r --include \*.sol --exclude-dir node_modules --exclude-dir dist | \
                        cut -d' ' -f3 | sort | uniq -c | sort -n | tail -1 | tr -s ' ' | cut -d' ' -f3)"
             popd >/dev/null
         else
