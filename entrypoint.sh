@@ -6,6 +6,10 @@ get() {
     env | sed -n "s/^$1=\(.*\)/\1/;T;p"
 }
 
+version_lte() {
+    printf '%s\n%s\n' "$1" "$2" | sort -C -V
+}
+
 TARGET="$1"
 SOLCVER="$2"
 NODEVER="$3"
@@ -27,6 +31,55 @@ compatibility_link()
         mkdir -p "$(dirname "$HOST_GITHUB_WORKSPACE")"
         ln -s "$GITHUB_WORKSPACE" "$HOST_GITHUB_WORKSPACE"
         echo "[-] Applied compatibility link: $HOST_GITHUB_WORKSPACE -> $GITHUB_WORKSPACE"
+    fi
+}
+
+fail_on_flags()
+{
+    INSTALLED_VERSION="$(slither --version)"
+    FAIL_ON_LEVEL="$(get INPUT_FAIL-ON)"
+
+    if [ "$FAIL_ON_LEVEL" = "config" ]; then
+       return
+    fi
+
+    if version_lte "$INSTALLED_VERSION" "0.8.3"; then
+        # older behavior - fail on findings by default
+        case "$FAIL_ON_LEVEL" in
+            low|medium|high|pedantic|all)
+                echo "[!] Requested fail-on $FAIL_ON_LEVEL but it is unsupported on Slither $INSTALLED_VERSION, ignoring" >&2
+                ;;
+            none)
+                echo "--ignore-return-value"
+                ;;
+            *)
+                echo "[!] Unknown fail-on value $FAIL_ON_LEVEL, ignoring" >&2
+                ;;
+        esac
+    else
+        # newer behavior - does not fail on findings by default
+        case "$FAIL_ON_LEVEL" in
+            all|pedantic)
+                # default behavior on slither >= 0.8.4
+                echo "--fail-pedantic"
+                ;;
+            low)
+                echo "--fail-low"
+                ;;
+            medium)
+                echo "--fail-medium"
+                ;;
+            high)
+                echo "--fail-high"
+                ;;
+            none)
+                echo "--no-fail-pedantic"
+                ;;
+            *)
+                echo "[!] Unknown fail-on value $FAIL_ON_LEVEL, ignoring" >&2
+                ;;
+        esac
+
     fi
 }
 
@@ -202,9 +255,11 @@ if [[ -n "$SLITHERCONF" ]]; then
     CONFIGFLAG="--config-file=$SLITHERCONF"
 fi
 
+FAILONFLAG="$(fail_on_flags)"
+
 if [[ -z "$SLITHERARGS" ]]; then
-    slither "$TARGET" $SARIFFLAG $IGNORECOMPILEFLAG $CONFIGFLAG
+    slither "$TARGET" $SARIFFLAG $IGNORECOMPILEFLAG $FAILONFLAG $CONFIGFLAG
 else
     echo "[-] SLITHERARGS provided. Running slither with extra arguments"
-    printf "%s\n" "$SLITHERARGS" | xargs slither "$TARGET" $SARIFFLAG $IGNORECOMPILEFLAG $CONFIGFLAG
+    printf "%s\n" "$SLITHERARGS" | xargs slither "$TARGET" $SARIFFLAG $IGNORECOMPILEFLAG $FAILONFLAG $CONFIGFLAG
 fi
