@@ -47,6 +47,21 @@ If the project requires advanced compilation settings or steps, set
 Slither. You can find an example workflow that uses this option in the
 [examples](#examples) section.
 
+### Using a different Slither version
+
+If the latest Slither release has a bug that does not let you analyze your
+project, you may want to use a different Slither version. The action lets you
+use an older version (or, if a fix is available, an unreleased Slither version)
+to analyze your code. You can use the `slither-version` option to specify a
+custom Slither release. This option can take different values:
+
+- a `slither-analyzer` PyPI release version number (e.g. `"0.8.3"`). Slither
+  will be installed from PyPI in this case.
+- a Git ref from [crytic/slither](https://github.com/crytic/slither) such as a
+  branch, tag, or full commit hash (e.g. `"dev"`, `"refs/heads/dev"`,
+  `"refs/tags/0.8.3"` or `"f962d6c4eefcd4d5038a781875b826948f222b31"`). Slither
+  will be installed from source in this case.
+
 ### Triaging results
 
 Add `// slither-disable-next-line DETECTOR_NAME` before the finding, or use the
