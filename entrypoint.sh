@@ -92,7 +92,7 @@ install_solc()
             SOLCVER="$(grep --no-filename '^pragma solidity' "$TARGET" | cut -d' ' -f3)"
         elif [[ -d "$TARGET" ]]; then
             pushd "$TARGET" >/dev/null
-            SOLCVER="$(grep --no-filename '^pragma solidity' -r --include \*.sol --exclude-dir node_modules | \
+            SOLCVER="$(grep --no-filename '^pragma solidity' -r --include \*.sol --exclude-dir node_modules --exclude-dir dist | \
                        cut -d' ' -f3 | sort | uniq -c | sort -n | tail -1 | tr -s ' ' | cut -d' ' -f3)"
             popd >/dev/null
         else
@@ -160,7 +160,13 @@ install_slither()
 {
     SLITHERPKG="slither-analyzer"
     if [[ -n "$SLITHERVER" ]]; then
-        SLITHERPKG="slither-analyzer==$SLITHERVER"
+        if [[ "$SLITHERVER" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            # PyPI release
+            SLITHERPKG="slither-analyzer==$SLITHERVER"
+        else
+            # GitHub reference (tag, branch, commit hash)
+            SLITHERPKG="slither-analyzer @ https://github.com/crytic/slither/archive/$SLITHERVER.tar.gz"
+        fi
         echo "[-] SLITHERVER provided, installing $SLITHERPKG"
     fi
 
@@ -183,8 +189,14 @@ install_deps()
             echo "[-] Installing dependencies from yarn.lock"
             npm install -g yarn
             yarn install --frozen-lockfile
+        elif [[ -f pnpm-lock.yaml ]]; then
+            echo "[-] Installing dependencies from pnpm-lock.yaml"
+            npm install -g pnpm
+            mkdir .pnpm-store
+            pnpm config set store-dir .pnpm-store
+            pnpm install --frozen-lockfile
         elif [[ -f package.json ]]; then
-            echo "[-] Did not detect a package-lock.json or yarn.lock in $TARGET, consider locking your dependencies!"
+            echo "[-] Did not detect a package-lock.json, yarn.lock, or pnpm-lock.yaml in $TARGET, consider locking your dependencies!"
             echo "[-] Proceeding with 'npm i' to install dependencies"
             npm i
         else
