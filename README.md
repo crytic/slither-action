@@ -63,8 +63,15 @@ config` to prevent the action from overriding your settings.
 | `low`              | Fail on any finding       | Fail on any finding >= low
 | `medium`           | Fail on any finding       | Fail on any finding >= medium
 | `high`             | Fail on any finding       | Fail on any finding >= high
-| `none`             | Do not fail on findings   | Do not fail on findings
+| `none`             | Do not fail on findings † | Do not fail on findings
 | `config`           | Determined by config file | Determined by config file
+
+† Note that if you use `fail-on: none` with Slither 0.8.3 or earlier, certain
+functionality may not work as expected. In particular, Slither will not produce
+a SARIF file in this case. If you require `fail-on: none` behavior with the
+SARIF integration, consider adding [`continue-on-error:
+true`](https://docs.github.com/es/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepscontinue-on-error)
+instead to the action step.
 
 ### Using a different Slither version
 
