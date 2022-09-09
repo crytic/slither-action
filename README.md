@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: crytic/slither-action@v0.1.1
+      - uses: crytic/slither-action@v0.2.0
 ```
 
 ### Options
@@ -116,7 +116,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Run Slither
-        uses: crytic/slither-action@v0.1.1
+        uses: crytic/slither-action@v0.2.0
         id: slither
         with:
           sarif: results.sarif
@@ -151,7 +151,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: crytic/slither-action@v0.1.1
+      - uses: crytic/slither-action@v0.2.0
         with:
           target: 'src/'
 ```
@@ -188,7 +188,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Run Slither
-      uses: crytic/slither-action@v0.1.1
+      uses: crytic/slither-action@v0.2.0
       id: slither
       with:
         node-version: 16
@@ -233,7 +233,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Run Slither
-      uses: crytic/slither-action@v0.1.1
+      uses: crytic/slither-action@v0.2.0
       id: slither
       with:
         sarif: results.sarif
@@ -300,7 +300,7 @@ jobs:
       run: nix-shell --run 'make build'
 
     - name: Run Slither
-      uses: crytic/slither-action@v0.1.1
+      uses: crytic/slither-action@v0.2.0
       with:
         ignore-compile: true
 ```
