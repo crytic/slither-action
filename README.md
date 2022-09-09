@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: crytic/slither-action@v0.1.1
+      - uses: crytic/slither-action@v0.2.0
 ```
 
 ### Options
@@ -63,8 +63,15 @@ config` to prevent the action from overriding your settings.
 | `low`              | Fail on any finding       | Fail on any finding >= low
 | `medium`           | Fail on any finding       | Fail on any finding >= medium
 | `high`             | Fail on any finding       | Fail on any finding >= high
-| `none`             | Do not fail on findings   | Do not fail on findings
+| `none`             | Do not fail on findings † | Do not fail on findings
 | `config`           | Determined by config file | Determined by config file
+
+† Note that if you use `fail-on: none` with Slither 0.8.3 or earlier, certain
+functionality may not work as expected. In particular, Slither will not produce
+a SARIF file in this case. If you require `fail-on: none` behavior with the
+SARIF integration, consider adding [`continue-on-error:
+true`](https://docs.github.com/es/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepscontinue-on-error)
+instead to the action step.
 
 ### Using a different Slither version
 
@@ -85,6 +92,22 @@ custom Slither release. This option can take different values:
 
 Add `// slither-disable-next-line DETECTOR_NAME` before the finding, or use the
 [Github Code Scanning integration](#github-code-scanning-integration).
+
+### Staying up to date
+
+We suggest enabling [Dependabot version updates for
+actions](https://docs.github.com/en/code-security/dependabot/working-with-dependabot/keeping-your-actions-up-to-date-with-dependabot)
+to get notified of new action releases. You can do so by creating
+`.github/dependabot.yml` in your repository with the following content:
+
+```yaml
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+```
 
 ## Github Code Scanning integration
 
@@ -116,7 +139,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Run Slither
-        uses: crytic/slither-action@v0.1.1
+        uses: crytic/slither-action@v0.2.0
         id: slither
         with:
           sarif: results.sarif
@@ -151,7 +174,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: crytic/slither-action@v0.1.1
+      - uses: crytic/slither-action@v0.2.0
         with:
           target: 'src/'
 ```
@@ -188,7 +211,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Run Slither
-      uses: crytic/slither-action@v0.1.1
+      uses: crytic/slither-action@v0.2.0
       id: slither
       with:
         node-version: 16
@@ -233,7 +256,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Run Slither
-      uses: crytic/slither-action@v0.1.1
+      uses: crytic/slither-action@v0.2.0
       id: slither
       with:
         sarif: results.sarif
@@ -300,7 +323,7 @@ jobs:
       run: nix-shell --run 'make build'
 
     - name: Run Slither
-      uses: crytic/slither-action@v0.1.1
+      uses: crytic/slither-action@v0.2.0
       with:
         ignore-compile: true
 ```
