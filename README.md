@@ -143,18 +143,18 @@ jobs:
         id: slither
         with:
           sarif: results.sarif
-          fail-on: none
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v2
+        if: always()
         with:
           sarif_file: ${{ steps.slither.outputs.sarif }}
 ```
 
 Here:
 
-- `fail-on: none` is required to let the SARIF upload step run if Slither finds issues
 - `id: slither` is the name used to reference the step later on (e.g., in `steps.slither.outputs.sarif`)
+- `if: always()` is required to let the SARIF upload step run if Slither finds issues
 
 ## Examples
 
@@ -188,9 +188,6 @@ NodeJS 16.x and install project dependencies before running Slither on the
 project. Slither will output findings in SARIF format, and those will get
 uploaded to GitHub.
 
-We include `fail-on: none` on the Slither action to avoid failing the run if
-findings are found.
-
 ```yaml
 name: Slither Analysis
 
@@ -216,10 +213,11 @@ jobs:
       with:
         node-version: 16
         sarif: results.sarif
-        fail-on: none
+        fail-on: all
 
     - name: Upload SARIF file
       uses: github/codeql-action/upload-sarif@v2
+      if: always()
       with:
         sarif_file: ${{ steps.slither.outputs.sarif }}
 ```
@@ -232,9 +230,6 @@ branch. It leverages the Python integration in the Slither action to set up a
 virtual environment and install project dependencies before running Slither on
 the project. Slither will output findings in SARIF format, and those will get
 uploaded to GitHub.
-
-We also include `fail-on: none` on the Slither action to avoid failing the run
-if findings are found.
 
 ```yaml
 name: Slither Analysis
@@ -260,10 +255,11 @@ jobs:
       id: slither
       with:
         sarif: results.sarif
-        fail-on: none
+        fail-on: all
 
     - name: Upload SARIF file
       uses: github/codeql-action/upload-sarif@v2
+      if: always()
       with:
         sarif_file: ${{ steps.slither.outputs.sarif }}
 ```
