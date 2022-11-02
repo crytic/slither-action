@@ -92,8 +92,17 @@ install_solc()
             SOLCVER="$(grep --no-filename '^pragma solidity' "$TARGET" | cut -d' ' -f3)"
         elif [[ -d "$TARGET" ]]; then
             pushd "$TARGET" >/dev/null
-            SOLCVER="$(grep --no-filename '^pragma solidity' -r --include \*.sol --exclude-dir node_modules --exclude-dir dist | \
-                       cut -d' ' -f3 | sort | uniq -c | sort -n | tail -1 | tr -s ' ' | cut -d' ' -f3)"
+
+            if [[ -f hardhat.config.js ]]; then
+              echo "[-] Discovered hardhat configuration; extracting solc version from there"
+              SOLCVER="$(grep -m 1 version hardhat.config.js | tr \' \" | cut -f2 -d\")"
+            fi
+
+            if [[ -z $SOLCVER ]]; then
+              SOLCVER="$(grep --no-filename '^pragma solidity' -r --include \*.sol --exclude-dir node_modules --exclude-dir dist | \
+
+                         cut -d' ' -f3 | sort | uniq -c | sort -n | tail -1 | tr -s ' ' | cut -d' ' -f3)"
+            fi
             popd >/dev/null
         else
             echo "[-] Target is neither a file nor a directory, assuming it is a path glob"
