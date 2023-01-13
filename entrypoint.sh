@@ -6,6 +6,10 @@ get() {
     env | sed -n "s/^$1=\(.*\)/\1/;T;p"
 }
 
+random_string() {
+    echo "$RANDOM $RANDOM $RANDOM $RANDOM $RANDOM" | md5sum | head -c 20
+}
+
 version_lte() {
     printf '%s\n%s\n' "$1" "$2" | sort -C -V
 }
@@ -265,9 +269,5 @@ else
     printf "%s\n" "$SLITHERARGS" | xargs slither "$TARGET" $SARIFFLAG $IGNORECOMPILEFLAG $FAILONFLAG $CONFIGFLAG | tee "$STDOUTFILE"
 fi
 
-# https://github.community/t/set-output-truncates-multiline-strings/16852/3
-STDOUT="$(< $STDOUTFILE)"
-STDOUT="${STDOUT//'%'/'%25'}"
-STDOUT="${STDOUT//$'\n'/'%0A'}"
-STDOUT="${STDOUT//$'\r'/'%0D'}"
-echo "::set-output name=stdout::$STDOUT"
+DELIMITER="$(random_string)"
+{ echo "stdout<<$DELIMITER"; cat "$STDOUTFILE"; echo -e "\n$DELIMITER"; } >> "$GITHUB_OUTPUT"

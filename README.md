@@ -328,10 +328,10 @@ jobs:
         ignore-compile: true
 ```
 
-## Example workflow: markdown report
+## Example workflow: Markdown report
 
 The following GitHub Actions workflow example will create/update pull requests
-with the contents of Slither's markdown report. Useful for when [GitHub Advanced
+with the contents of Slither's Markdown report. Useful for when [GitHub Advanced
 Security](https://docs.github.com/en/get-started/learning-about-github/about-github-advanced-security)
 (required for the SARIF feature) is unavailable.
 
@@ -346,23 +346,20 @@ on:
 jobs:
   analyze:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
 
     - name: Run Slither
-      uses: crytic/slither-action@main
-      continue-on-error: true
+      uses: crytic/slither-action@v0.2.0
       id: slither
       with:
         node-version: 16
+        fail-on: none
         slither-args: --checklist --markdown-root ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}/
 
     - name: Create/update checklist as PR comment
-      uses: actions/github-script@v5.1.0
+      uses: actions/github-script@v6
       if: github.event_name == 'pull_request'
       with:
         script: |
