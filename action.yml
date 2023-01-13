@@ -21,6 +21,10 @@ inputs:
     description: 'Whether to ignore the compilation step when running crytic-compile and Slither.'
     default: false
     type: boolean
+  fail-on:
+    description: 'Cause the action to fail if Slither finds any findings of this severity or higher. By default it will fail if any finding is found'
+    default: all
+    type: string
   internal-github-workspace:
     # Do not set manually. This is a hacky way to pass the host workspace path to inside the action
     # This is used to improve compatibility when using `ignore-compile`.

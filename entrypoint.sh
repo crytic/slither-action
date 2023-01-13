@@ -6,6 +6,10 @@ get() {
     env | sed -n "s/^$1=\(.*\)/\1/;T;p"
 }
 
+version_lte() {
+    printf '%s\n%s\n' "$1" "$2" | sort -C -V
+}
+
 TARGET="$1"
 SOLCVER="$2"
 NODEVER="$3"
@@ -15,6 +19,11 @@ SLITHERARGS="$(get INPUT_SLITHER-ARGS)"
 SLITHERCONF="$(get INPUT_SLITHER-CONFIG)"
 STDOUTFILE="/tmp/slither-stdout"
 IGNORECOMPILE="$(get INPUT_IGNORE-COMPILE)"
+
+# #19 - an user may set SOLC_VERSION in the workflow and cause problems here.
+# Make sure it's unset. If you need to use a different solc version, override
+# it with the `solc-version` action option.
+unset SOLC_VERSION
 
 compatibility_link()
 {
@@ -26,6 +35,55 @@ compatibility_link()
     fi
 }
 
+fail_on_flags()
+{
+    INSTALLED_VERSION="$(slither --version)"
+    FAIL_ON_LEVEL="$(get INPUT_FAIL-ON)"
+
+    if [ "$FAIL_ON_LEVEL" = "config" ]; then
+       return
+    fi
+
+    if version_lte "$INSTALLED_VERSION" "0.8.3"; then
+        # older behavior - fail on findings by default
+        case "$FAIL_ON_LEVEL" in
+            low|medium|high|pedantic|all)
+                echo "[!] Requested fail-on $FAIL_ON_LEVEL but it is unsupported on Slither $INSTALLED_VERSION, ignoring" >&2
+                ;;
+            none)
+                echo "--ignore-return-value"
+                ;;
+            *)
+                echo "[!] Unknown fail-on value $FAIL_ON_LEVEL, ignoring" >&2
+                ;;
+        esac
+    else
+        # newer behavior - does not fail on findings by default
+        case "$FAIL_ON_LEVEL" in
+            all|pedantic)
+                # default behavior on slither >= 0.8.4
+                echo "--fail-pedantic"
+                ;;
+            low)
+                echo "--fail-low"
+                ;;
+            medium)
+                echo "--fail-medium"
+                ;;
+            high)
+                echo "--fail-high"
+                ;;
+            none)
+                echo "--no-fail-pedantic"
+                ;;
+            *)
+                echo "[!] Unknown fail-on value $FAIL_ON_LEVEL, ignoring" >&2
+                ;;
+        esac
+
+    fi
+}
+
 install_solc()
 {
     if [[ -z "$SOLCVER" ]]; then
@@ -33,16 +91,21 @@ install_solc()
 
         if [[ -f "$TARGET" ]]; then
             SOLCVER="$(grep --no-filename '^pragma solidity' "$TARGET" | cut -d' ' -f3)"
-        else
+        elif [[ -d "$TARGET" ]]; then
             pushd "$TARGET" >/dev/null
-            SOLCVER="$(grep --no-filename '^pragma solidity' -r --include \*.sol --exclude-dir node_modules | \
+            SOLCVER="$(grep --no-filename '^pragma solidity' -r --include \*.sol --exclude-dir node_modules --exclude-dir dist | \
                        cut -d' ' -f3 | sort | uniq -c | sort -n | tail -1 | tr -s ' ' | cut -d' ' -f3)"
             popd >/dev/null
+        else
+            echo "[-] Target is neither a file nor a directory, assuming it is a path glob"
+            SOLCVER="$( shopt -s globstar; for file in $TARGET; do
+                            grep --no-filename '^pragma solidity' -r "$file" ; \
+                        done | cut -d' ' -f3 | sort | uniq -c | sort -n | tail -1 | tr -s ' ' | cut -d' ' -f3)"
         fi
         SOLCVER="$(echo "$SOLCVER" | sed 's/[^0-9\.]//g')"
 
         if [[ -z "$SOLCVER" ]]; then
-        # Fallback to latest version if the above fails.
+            # Fallback to latest version if the above fails.
             SOLCVER="$(solc-select install | tail -1)"
         fi
 
@@ -98,7 +161,13 @@ install_slither()
 {
     SLITHERPKG="slither-analyzer"
     if [[ -n "$SLITHERVER" ]]; then
-        SLITHERPKG="slither-analyzer==$SLITHERVER"
+        if [[ "$SLITHERVER" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            # PyPI release
+            SLITHERPKG="slither-analyzer==$SLITHERVER"
+        else
+            # GitHub reference (tag, branch, commit hash)
+            SLITHERPKG="slither-analyzer @ https://github.com/crytic/slither/archive/$SLITHERVER.tar.gz"
+        fi
         echo "[-] SLITHERVER provided, installing $SLITHERPKG"
     fi
 
@@ -121,8 +190,14 @@ install_deps()
             echo "[-] Installing dependencies from yarn.lock"
             npm install -g yarn
             yarn install --frozen-lockfile
+        elif [[ -f pnpm-lock.yaml ]]; then
+            echo "[-] Installing dependencies from pnpm-lock.yaml"
+            npm install -g pnpm
+            mkdir .pnpm-store
+            pnpm config set store-dir .pnpm-store
+            pnpm install --frozen-lockfile
         elif [[ -f package.json ]]; then
-            echo "[-] Did not detect a package-lock.json or yarn.lock in $TARGET, consider locking your dependencies!"
+            echo "[-] Did not detect a package-lock.json, yarn.lock, or pnpm-lock.yaml in $TARGET, consider locking your dependencies!"
             echo "[-] Proceeding with 'npm i' to install dependencies"
             npm i
         else
@@ -171,7 +246,7 @@ fi
 SARIFFLAG=
 if [[ -n "$SARIFOUT" ]]; then
     echo "[-] SARIF output enabled, writing to $SARIFOUT."
-    echo "::set-output name=sarif::$SARIFOUT"
+    echo "sarif=$SARIFOUT" >> "$GITHUB_OUTPUT"
     SARIFFLAG="--sarif=$SARIFOUT"
 fi
 
@@ -181,11 +256,13 @@ if [[ -n "$SLITHERCONF" ]]; then
     CONFIGFLAG="--config-file=$SLITHERCONF"
 fi
 
+FAILONFLAG="$(fail_on_flags)"
+
 if [[ -z "$SLITHERARGS" ]]; then
-    slither "$TARGET" $SARIFFLAG $IGNORECOMPILEFLAG $CONFIGFLAG | tee "$STDOUTFILE"
+    slither "$TARGET" $SARIFFLAG $IGNORECOMPILEFLAG $FAILONFLAG $CONFIGFLAG | tee "$STDOUTFILE"
 else
     echo "[-] SLITHERARGS provided. Running slither with extra arguments"
-    printf "%s\n" "$SLITHERARGS" | xargs slither "$TARGET" $SARIFFLAG $IGNORECOMPILEFLAG $CONFIGFLAG | tee "$STDOUTFILE"
+    printf "%s\n" "$SLITHERARGS" | xargs slither "$TARGET" $SARIFFLAG $IGNORECOMPILEFLAG $FAILONFLAG $CONFIGFLAG | tee "$STDOUTFILE"
 fi
 
 # https://github.community/t/set-output-truncates-multiline-strings/16852/3
