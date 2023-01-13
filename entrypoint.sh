@@ -245,7 +245,7 @@ fi
 SARIFFLAG=
 if [[ -n "$SARIFOUT" ]]; then
     echo "[-] SARIF output enabled, writing to $SARIFOUT."
-    echo "::set-output name=sarif::$SARIFOUT"
+    echo "sarif=$SARIFOUT" >> "$GITHUB_OUTPUT"
     SARIFFLAG="--sarif=$SARIFOUT"
 fi
 
