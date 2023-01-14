@@ -6,6 +6,10 @@ get() {
     env | sed -n "s/^$1=\(.*\)/\1/;T;p"
 }
 
+random_string() {
+    echo "$RANDOM $RANDOM $RANDOM $RANDOM $RANDOM" | md5sum | head -c 20
+}
+
 version_lte() {
     printf '%s\n%s\n' "$1" "$2" | sort -C -V
 }
@@ -17,6 +21,7 @@ SARIFOUT="$4"
 SLITHERVER="$5"
 SLITHERARGS="$(get INPUT_SLITHER-ARGS)"
 SLITHERCONF="$(get INPUT_SLITHER-CONFIG)"
+STDOUTFILE="/tmp/slither-stdout"
 IGNORECOMPILE="$(get INPUT_IGNORE-COMPILE)"
 
 # #19 - an user may set SOLC_VERSION in the workflow and cause problems here.
@@ -258,8 +263,11 @@ fi
 FAILONFLAG="$(fail_on_flags)"
 
 if [[ -z "$SLITHERARGS" ]]; then
-    slither "$TARGET" $SARIFFLAG $IGNORECOMPILEFLAG $FAILONFLAG $CONFIGFLAG
+    slither "$TARGET" $SARIFFLAG $IGNORECOMPILEFLAG $FAILONFLAG $CONFIGFLAG | tee "$STDOUTFILE"
 else
     echo "[-] SLITHERARGS provided. Running slither with extra arguments"
-    printf "%s\n" "$SLITHERARGS" | xargs slither "$TARGET" $SARIFFLAG $IGNORECOMPILEFLAG $FAILONFLAG $CONFIGFLAG
+    printf "%s\n" "$SLITHERARGS" | xargs slither "$TARGET" $SARIFFLAG $IGNORECOMPILEFLAG $FAILONFLAG $CONFIGFLAG | tee "$STDOUTFILE"
 fi
+
+DELIMITER="$(random_string)"
+{ echo "stdout<<$DELIMITER"; cat "$STDOUTFILE"; echo -e "\n$DELIMITER"; } >> "$GITHUB_OUTPUT"

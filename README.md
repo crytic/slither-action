@@ -327,3 +327,75 @@ jobs:
       with:
         ignore-compile: true
 ```
+
+## Example workflow: Markdown report
+
+The following GitHub Actions workflow example will create/update pull requests
+with the contents of Slither's Markdown report. Useful for when [GitHub Advanced
+Security](https://docs.github.com/en/get-started/learning-about-github/about-github-advanced-security)
+(required for the SARIF feature) is unavailable.
+
+```yaml
+name: Slither Analysis
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Run Slither
+      uses: crytic/slither-action@v0.2.0
+      id: slither
+      with:
+        node-version: 16
+        fail-on: none
+        slither-args: --checklist --markdown-root ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}/
+
+    - name: Create/update checklist as PR comment
+      uses: actions/github-script@v6
+      if: github.event_name == 'pull_request'
+      with:
+        script: |
+          const script = require('.github/scripts/comment')
+          const header = '# Slither report'
+          const body = `${{ steps.slither.outputs.stdout }}`
+          await script({ github, context, header, body })
+```
+
+`.github/scripts/comment.js`:
+
+```js
+module.exports = async ({ github, context, header, body }) => {
+  const comment = [header, body].join("\n");
+
+  const { data: comments } = await github.rest.issues.listComments({
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    issue_number: context.payload.number,
+  });
+
+  const botComment = comments.find(
+    (comment) =>
+      // github-actions bot user
+      comment.user.id === 41898282 && comment.body.startsWith(header)
+  );
+
+  const commentFn = botComment ? "updateComment" : "createComment";
+
+  await github.rest.issues[commentFn]({
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    body: comment,
+    ...(botComment
+      ? { comment_id: botComment.id }
+      : { issue_number: context.payload.number }),
+  });
+};
+```
