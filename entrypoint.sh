@@ -29,6 +29,12 @@ IGNORECOMPILE="$(get INPUT_IGNORE-COMPILE)"
 # it with the `solc-version` action option.
 unset SOLC_VERSION
 
+# #49 - the user/group info may mismatch between container and host, and it
+# may cause git to complain with `detected dubious ownership in repository`.
+# mark everything as safe here as we don't know where the repository is (it
+# might be something other than $GITHUB_WORKSPACE)
+git config --global --add safe.directory '*'
+
 compatibility_link()
 {
     HOST_GITHUB_WORKSPACE="$(get INPUT_INTERNAL-GITHUB-WORKSPACE | tr -d \")"
