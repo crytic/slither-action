@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -e -o pipefail
 
 # smoelius: `get` works for non-standard variable names like `INPUT_CORPUS-DIR`.
 get() {
