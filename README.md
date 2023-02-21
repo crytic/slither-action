@@ -310,7 +310,7 @@ jobs:
       run: npm install --global yarn
 
     - name: Install Nix
-      uses: cachix/install-nix-action@v25
+      uses: cachix/install-nix-action@v26
 
     - name: Configure Cachix
       uses: cachix/cachix-action@v14
