@@ -303,16 +303,16 @@ jobs:
           submodules: recursive
 
     - name: Set up Node
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
 
     - name: Install Yarn
       run: npm install --global yarn
 
     - name: Install Nix
-      uses: cachix/install-nix-action@v16
+      uses: cachix/install-nix-action@v19
 
     - name: Configure Cachix
-      uses: cachix/cachix-action@v10
+      uses: cachix/cachix-action@v12
       with:
         name: dapp
 
