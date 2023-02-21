@@ -328,7 +328,7 @@ jobs:
         ignore-compile: true
 ```
 
-## Example workflow: Markdown report
+### Example workflow: Markdown report
 
 The following GitHub Actions workflow example will create/update pull requests
 with the contents of Slither's Markdown report. Useful for when [GitHub Advanced
