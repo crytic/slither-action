@@ -199,7 +199,7 @@ install_deps()
         elif [[ -f yarn.lock ]]; then
             echo "[-] Installing dependencies from yarn.lock"
             npm install -g yarn
-            yarn install --frozen-lockfile
+            yarn install --immutable
         elif [[ -f pnpm-lock.yaml ]]; then
             echo "[-] Installing dependencies from pnpm-lock.yaml"
             npm install -g pnpm
