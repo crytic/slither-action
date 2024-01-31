@@ -23,8 +23,8 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: crytic/slither-action@v0.3.0
+      - uses: actions/checkout@v4
+      - uses: crytic/slither-action@v0.3.1
 ```
 
 ### Options
@@ -136,17 +136,17 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Run Slither
-        uses: crytic/slither-action@v0.3.0
+        uses: crytic/slither-action@v0.3.1
         id: slither
         with:
           sarif: results.sarif
           fail-on: none
 
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: ${{ steps.slither.outputs.sarif }}
 ```
@@ -173,8 +173,8 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: crytic/slither-action@v0.3.0
+      - uses: actions/checkout@v4
+      - uses: crytic/slither-action@v0.3.1
         with:
           target: 'src/'
 ```
@@ -208,10 +208,10 @@ jobs:
       security-events: write
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Run Slither
-      uses: crytic/slither-action@v0.3.0
+      uses: crytic/slither-action@v0.3.1
       id: slither
       with:
         node-version: 16
@@ -219,7 +219,7 @@ jobs:
         fail-on: none
 
     - name: Upload SARIF file
-      uses: github/codeql-action/upload-sarif@v2
+      uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: ${{ steps.slither.outputs.sarif }}
 ```
@@ -253,17 +253,17 @@ jobs:
       security-events: write
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Run Slither
-      uses: crytic/slither-action@v0.3.0
+      uses: crytic/slither-action@v0.3.1
       id: slither
       with:
         sarif: results.sarif
         fail-on: none
 
     - name: Upload SARIF file
-      uses: github/codeql-action/upload-sarif@v2
+      uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: ${{ steps.slither.outputs.sarif }}
 ```
@@ -298,21 +298,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
           submodules: recursive
 
     - name: Set up Node
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
 
     - name: Install Yarn
       run: npm install --global yarn
 
     - name: Install Nix
-      uses: cachix/install-nix-action@v19
+      uses: cachix/install-nix-action@v25
 
     - name: Configure Cachix
-      uses: cachix/cachix-action@v12
+      uses: cachix/cachix-action@v14
       with:
         name: dapp
 
@@ -323,7 +323,7 @@ jobs:
       run: nix-shell --run 'make build'
 
     - name: Run Slither
-      uses: crytic/slither-action@v0.3.0
+      uses: crytic/slither-action@v0.3.1
       with:
         ignore-compile: true
 ```
@@ -348,10 +348,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Run Slither
-      uses: crytic/slither-action@v0.3.0
+      uses: crytic/slither-action@v0.3.1
       id: slither
       with:
         node-version: 16
@@ -359,7 +359,7 @@ jobs:
         slither-args: --checklist --markdown-root ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}/
 
     - name: Create/update checklist as PR comment
-      uses: actions/github-script@v6
+      uses: actions/github-script@v7
       if: github.event_name == 'pull_request'
       env:
         REPORT: ${{ steps.slither.outputs.stdout }}
