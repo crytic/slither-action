@@ -153,8 +153,8 @@ install_foundry()
     if [[ -d "$TARGET" ]] && [[ -f "$TARGET/foundry.toml" ]]; then
         echo "[-] Foundry target detected, installing foundry nightly"
 
-        wget -q -O foundryup https://raw.githubusercontent.com/foundry-rs/foundry/36a66c857ff148f6ed007cdcd3402077de3595cf/foundryup/foundryup
-        if [ ! "c0c6711dc39deae65bebcc0320fec1265930895a527e18daa643a708218c07ae  foundryup" = "$(sha256sum foundryup)" ]; then
+        wget -q -O foundryup https://raw.githubusercontent.com/foundry-rs/foundry/7b452656f722fc560f0414db3ce24a1f2972a8b7/foundryup/foundryup
+        if [ ! "e7628766329e2873484d5d633c750b5019eec77ae506c11a0ef13b440cc3e7c2  foundryup" = "$(sha256sum foundryup)" ]; then
             echo "Foundry installer does not match expected checksum! exiting"
             exit 1
         fi
