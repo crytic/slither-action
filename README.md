@@ -361,11 +361,13 @@ jobs:
     - name: Create/update checklist as PR comment
       uses: actions/github-script@v6
       if: github.event_name == 'pull_request'
+      env:
+        REPORT: ${{ steps.slither.outputs.stdout }}
       with:
         script: |
           const script = require('.github/scripts/comment')
           const header = '# Slither report'
-          const body = `${{ steps.slither.outputs.stdout }}`
+          const body = process.env.REPORT
           await script({ github, context, header, body })
 ```
 
