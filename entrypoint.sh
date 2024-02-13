@@ -23,6 +23,7 @@ SLITHERARGS="$(get INPUT_SLITHER-ARGS)"
 SLITHERCONF="$(get INPUT_SLITHER-CONFIG)"
 STDOUTFILE="/tmp/slither-stdout"
 IGNORECOMPILE="$(get INPUT_IGNORE-COMPILE)"
+FOUNDRYVER="$(get INPUT_FOUNDRY-VERSION)"
 
 # #19 - an user may set SOLC_VERSION in the workflow and cause problems here.
 # Make sure it's unset. If you need to use a different solc version, override
@@ -151,7 +152,7 @@ install_node()
 install_foundry()
 {
     if [[ -d "$TARGET" ]] && [[ -f "$TARGET/foundry.toml" ]]; then
-        echo "[-] Foundry target detected, installing foundry nightly"
+        echo "[-] Foundry target detected, installing foundry $FOUNDRYVER"
 
         wget -q -O foundryup https://raw.githubusercontent.com/foundry-rs/foundry/7b452656f722fc560f0414db3ce24a1f2972a8b7/foundryup/foundryup
         if [ ! "e7628766329e2873484d5d633c750b5019eec77ae506c11a0ef13b440cc3e7c2  foundryup" = "$(sha256sum foundryup)" ]; then
@@ -162,8 +163,25 @@ install_foundry()
         export FOUNDRY_DIR="/opt/foundry"
         export PATH="$FOUNDRY_DIR/bin:$PATH"
         mkdir -p "$FOUNDRY_DIR/bin" "$FOUNDRY_DIR/share/man/man1"
-        bash foundryup
+        # foundryup sometimes fails to install foundry, so try a few times
+        FOUNDRY_INSTALL_TRIES=0
+        FOUNDRY_INSTALL_TRIES_MAX=7
+        FOUNDRY_INSTALL_SLEEP=1
+        while [[ ! -f "$FOUNDRY_DIR/bin/forge" && $FOUNDRY_INSTALL_TRIES -lt $FOUNDRY_INSTALL_TRIES_MAX ]]; do
+            if [[ "$FOUNDRY_INSTALL_TRIES" -gt 0 ]]; then
+                echo "foundryup failed. Sleeping $FOUNDRY_INSTALL_SLEEP seconds before trying again."
+                sleep "$FOUNDRY_INSTALL_SLEEP"
+            fi
+            bash foundryup -v "$FOUNDRYVER"
+            FOUNDRY_INSTALL_TRIES=$((FOUNDRY_INSTALL_TRIES+1))
+            FOUNDRY_INSTALL_SLEEP=$((FOUNDRY_INSTALL_SLEEP*2))
+        done
         rm foundryup
+        if [[ ! -f "$FOUNDRY_DIR/bin/forge" ]]; then
+            echo "Foundry installlation via foundryup failed $FOUNDRY_INSTALL_TRIES_MAX times in a row."
+            echo "Report this issue to the Foundry developers with the log from above."
+            exit 1
+        fi
     fi
 }
 

@@ -33,6 +33,7 @@ jobs:
 |------------------|------------
 | `ignore-compile` | If set to true, the Slither action will not attempt to compile the project. False by default. See [Advanced compilation](#advanced-compilation).
 | `fail-on`        | Cause the action to fail if Slither finds any issue of this severity or higher. See [action fail behavior](#action-fail-behavior).
+| `foundry-version`| The version of `forge` to use, if required. If this field is not set, the `nightly` version will be used.
 | `node-version`   | The version of `node` to use. If this field is not set, the latest version will be used.
 | `sarif`          | If provided, the path of the SARIF file to produce, relative to the repo root (see [Github Code Scanning integration](#github-code-scanning-integration)).
 | `slither-args`   | Extra arguments to pass to Slither.
