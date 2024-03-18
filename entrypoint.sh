@@ -240,6 +240,7 @@ install_deps()
     fi
 }
 
+compatibility_link
 install_slither
 
 IGNORECOMPILEFLAG=
@@ -249,7 +250,6 @@ if [[ -z "$IGNORECOMPILE" || $IGNORECOMPILE =~ ^[Ff]alse$ ]]; then
     install_foundry
     install_deps
 else
-    compatibility_link
     IGNORECOMPILEFLAG="--ignore-compile"
 fi
 
