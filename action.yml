@@ -36,6 +36,8 @@ outputs:
     description: 'If produced, the path of the SARIF file, relative to the repo root.'
   stdout:
     description: 'Standard output from Slither. Works well when passing `--checklist` in slither-args.'
+   checklist:
+     description: 'Generate a markdown page with the detector results'
 runs:
   using: 'docker'
   image: 'Dockerfile'
