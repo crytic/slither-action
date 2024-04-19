@@ -21,6 +21,7 @@ SARIFOUT="$4"
 SLITHERVER="$5"
 SLITHERARGS="$(get INPUT_SLITHER-ARGS)"
 SLITHERCONF="$(get INPUT_SLITHER-CONFIG)"
+SLITHERPLUGINS="$(get INPUT_SLITHER-PLUGINS)"
 STDOUTFILE="/tmp/slither-stdout"
 IGNORECOMPILE="$(get INPUT_IGNORE-COMPILE)"
 
@@ -185,6 +186,13 @@ install_slither()
     export PATH="/opt/slither/bin:$PATH"
     pip3 install wheel
     pip3 install "$SLITHERPKG"
+
+    if [[ -n "$SLITHERPLUGINS" ]]; then
+        echo "[-] Slither plugins provided, installing them"
+        pushd "$(dirname "$SLITHERPLUGINS")" >/dev/null
+        pip3 install -r "$(basename "$SLITHERPLUGINS")"
+        popd >/dev/null
+    fi
 }
 
 install_deps()
@@ -240,6 +248,12 @@ install_deps()
     fi
 }
 
+output_stdout()
+{
+    DELIMITER="$(random_string)"
+    { echo "stdout<<$DELIMITER"; cat "$STDOUTFILE"; echo -e "\n$DELIMITER"; } >> "$GITHUB_OUTPUT"
+}
+
 compatibility_link
 install_slither
 
@@ -268,12 +282,11 @@ fi
 
 FAILONFLAG="$(fail_on_flags)"
 
+trap "output_stdout" EXIT
+
 if [[ -z "$SLITHERARGS" ]]; then
     slither "$TARGET" $SARIFFLAG $IGNORECOMPILEFLAG $FAILONFLAG $CONFIGFLAG | tee "$STDOUTFILE"
 else
     echo "[-] SLITHERARGS provided. Running slither with extra arguments"
     printf "%s\n" "$SLITHERARGS" | xargs slither "$TARGET" $SARIFFLAG $IGNORECOMPILEFLAG $FAILONFLAG $CONFIGFLAG | tee "$STDOUTFILE"
 fi
-
-DELIMITER="$(random_string)"
-{ echo "stdout<<$DELIMITER"; cat "$STDOUTFILE"; echo -e "\n$DELIMITER"; } >> "$GITHUB_OUTPUT"

@@ -17,6 +17,8 @@ inputs:
     description: 'The path to the Slither configuration file. By default, `./slither.config.json` is used if present.'
   slither-version:
     description: 'The version of slither-analyzer to use. By default, the latest release in PyPI is used.'
+  slither-plugins:
+    description: 'A requirements.txt file to install alongside Slither. Useful to install custom plugins.'
   ignore-compile:
     description: 'Whether to ignore the compilation step when running crytic-compile and Slither.'
     default: false

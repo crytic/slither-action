@@ -38,6 +38,7 @@ jobs:
 | `slither-args`   | Extra arguments to pass to Slither.
 | `slither-config` | The path to the Slither configuration file. By default, `./slither.config.json` is used if present. See [Configuration file](https://github.com/crytic/slither/wiki/Usage#configuration-file).
 | `slither-version`| The version of slither-analyzer to use. By default, the latest release in PyPI is used.
+| `slither-plugins`| A `requirements.txt` file to install with `pip` alongside Slither. Useful to install custom plugins.
 | `solc-version`   | The version of `solc` to use. If this field is not set, the version will be guessed from project metadata. **This only has an effect if you are not using a compilation framework for your project** -- i.e., if `target` is a standalone `.sol` file.
 | `target`         | The path to the root of the project to be analyzed by Slither. It can be a directory or a file, and it defaults to the repo root.
 
@@ -400,4 +401,33 @@ module.exports = async ({ github, context, header, body }) => {
       : { issue_number: context.payload.number }),
   });
 };
+```
+
+### Example workflow: external plugins
+
+The following is a modification of the "simple action" example from earlier.
+This example uses the `slither-plugins` property to point to a pip
+[requirements](https://pip.pypa.io/en/stable/reference/requirements-file-format/)
+file that gets installed alongside Slither. In this example, the requirements
+file installs the example plugin provided in the Slither repository, but this
+can be modified to install extra third-party or in-house detectors.
+
+```yaml
+name: Slither Analysis
+on: [push]
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: crytic/slither-action@v0.3.2
+        with:
+          target: 'src/'
+          slither-plugins: requirements-plugins.txt
+```
+
+`requirements-plugins.txt`:
+
+```text
+slither_my_plugin @ git+https://github.com/crytic/slither#egg=slither_my_plugin&subdirectory=plugin_example
 ```
