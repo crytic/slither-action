@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: crytic/slither-action@v0.3.2
+      - uses: crytic/slither-action@v0.4.0
 ```
 
 ### Options
@@ -140,7 +140,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Run Slither
-        uses: crytic/slither-action@v0.3.2
+        uses: crytic/slither-action@v0.4.0
         id: slither
         with:
           sarif: results.sarif
@@ -175,7 +175,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: crytic/slither-action@v0.3.2
+      - uses: crytic/slither-action@v0.4.0
         with:
           target: 'src/'
 ```
@@ -212,7 +212,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Run Slither
-      uses: crytic/slither-action@v0.3.2
+      uses: crytic/slither-action@v0.4.0
       id: slither
       with:
         node-version: 16
@@ -257,7 +257,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Run Slither
-      uses: crytic/slither-action@v0.3.2
+      uses: crytic/slither-action@v0.4.0
       id: slither
       with:
         sarif: results.sarif
@@ -310,7 +310,7 @@ jobs:
       run: npm install --global yarn
 
     - name: Install Nix
-      uses: cachix/install-nix-action@v25
+      uses: cachix/install-nix-action@v26
 
     - name: Configure Cachix
       uses: cachix/cachix-action@v14
@@ -324,7 +324,7 @@ jobs:
       run: nix-shell --run 'make build'
 
     - name: Run Slither
-      uses: crytic/slither-action@v0.3.2
+      uses: crytic/slither-action@v0.4.0
       with:
         ignore-compile: true
 ```
@@ -352,7 +352,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Run Slither
-      uses: crytic/slither-action@v0.3.2
+      uses: crytic/slither-action@v0.4.0
       id: slither
       with:
         node-version: 16
@@ -420,7 +420,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: crytic/slither-action@v0.3.2
+      - uses: crytic/slither-action@v0.4.0
         with:
           target: 'src/'
           slither-plugins: requirements-plugins.txt
