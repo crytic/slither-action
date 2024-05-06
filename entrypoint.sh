@@ -24,6 +24,7 @@ SLITHERCONF="$(get INPUT_SLITHER-CONFIG)"
 SLITHERPLUGINS="$(get INPUT_SLITHER-PLUGINS)"
 STDOUTFILE="/tmp/slither-stdout"
 IGNORECOMPILE="$(get INPUT_IGNORE-COMPILE)"
+FOUNDRYVER="$(get INPUT_FOUNDRY-VERSION)"
 
 # #19 - an user may set SOLC_VERSION in the workflow and cause problems here.
 # Make sure it's unset. If you need to use a different solc version, override
@@ -152,7 +153,12 @@ install_node()
 install_foundry()
 {
     if [[ -d "$TARGET" ]] && [[ -f "$TARGET/foundry.toml" ]]; then
-        echo "[-] Foundry target detected, installing foundry nightly"
+        if [[ -z "$FOUNDRYVER" ]]; then
+            FOUNDRYVER="nightly"
+            echo "[-] FOUNDRYVER was not set, using the nightly version."
+        fi
+
+        echo "[-] Foundry target detected, installing foundry $FOUNDRYVER"
 
         wget -q -O foundryup https://raw.githubusercontent.com/foundry-rs/foundry/7b452656f722fc560f0414db3ce24a1f2972a8b7/foundryup/foundryup
         if [ ! "e7628766329e2873484d5d633c750b5019eec77ae506c11a0ef13b440cc3e7c2  foundryup" = "$(sha256sum foundryup)" ]; then
@@ -163,7 +169,7 @@ install_foundry()
         export FOUNDRY_DIR="/opt/foundry"
         export PATH="$FOUNDRY_DIR/bin:$PATH"
         mkdir -p "$FOUNDRY_DIR/bin" "$FOUNDRY_DIR/share/man/man1"
-        bash foundryup
+        bash foundryup -- -v "$FOUNDRYVER"
         rm foundryup
     fi
 }

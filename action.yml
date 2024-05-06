@@ -5,6 +5,8 @@ inputs:
     description: 'The version of solc to use. Should be autodetected, but may be specified manually.'
   node-version:
     description: 'The version of node to use.'
+  foundry-version:
+    description: 'The version of Foundry to use.'
   target:
     description: 'The path of the project that Slither should analyze, relative to the repo root.'
     default: .
