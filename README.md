@@ -34,6 +34,7 @@ jobs:
 | `ignore-compile` | If set to true, the Slither action will not attempt to compile the project. False by default. See [Advanced compilation](#advanced-compilation).
 | `fail-on`        | Cause the action to fail if Slither finds any issue of this severity or higher. See [action fail behavior](#action-fail-behavior).
 | `node-version`   | The version of `node` to use. If this field is not set, the latest version will be used.
+| `foundry-version`| The version of Foundry to use. If this field is not set, the latest nightly version will be used.
 | `sarif`          | If provided, the path of the SARIF file to produce, relative to the repo root (see [Github Code Scanning integration](#github-code-scanning-integration)).
 | `slither-args`   | Extra arguments to pass to Slither.
 | `slither-config` | The path to the Slither configuration file. By default, `./slither.config.json` is used if present. See [Configuration file](https://github.com/crytic/slither/wiki/Usage#configuration-file).
