@@ -153,7 +153,7 @@ install_node()
 install_foundry()
 {
     if [[ -d "$TARGET" ]] && [[ -f "$TARGET/foundry.toml" ]]; then
-        echo "[-] Foundry target detected, installing foundry nightly"
+        echo "[-] Foundry target detected, installing foundry stable"
 
         wget -q -O foundryup https://raw.githubusercontent.com/foundry-rs/foundry/stable/foundryup/foundryup
         sha256sum -c checksum --status --strict --ignore-missing
