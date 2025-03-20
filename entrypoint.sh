@@ -135,7 +135,8 @@ install_node()
     fi
 
     wget -q -O nvm-install.sh https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh
-    if [ ! "fabc489b39a5e9c999c7cab4d281cdbbcbad10ec2f8b9a7f7144ad701b6bfdc7  nvm-install.sh" = "$(sha256sum nvm-install.sh)" ]; then
+    sha256sum -c checksum --status --strict --ignore-missing
+    if [[ $? -ne 0 ]]; then
         echo "NVM installer does not match expected checksum! exiting"
         exit 1
     fi
@@ -154,8 +155,9 @@ install_foundry()
     if [[ -d "$TARGET" ]] && [[ -f "$TARGET/foundry.toml" ]]; then
         echo "[-] Foundry target detected, installing foundry stable"
 
-        wget -q -O foundryup https://raw.githubusercontent.com/foundry-rs/foundry/41c6653e2adee0354ba6cdf7233c58294bcea3bf/foundryup/foundryup
-        if [ ! "a717b894d8c4d1f375f31e63c9f7835883d065c2de107c20e055caaa7ca04c60  foundryup" = "$(sha256sum foundryup)" ]; then
+        wget -q -O foundryup https://raw.githubusercontent.com/foundry-rs/foundry/stable/foundryup/foundryup
+        sha256sum -c checksum --status --strict --ignore-missing
+        if [[ $? -ne 0 ]]; then
             echo "Foundry installer does not match expected checksum! exiting"
             exit 1
         fi
