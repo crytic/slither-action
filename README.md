@@ -23,8 +23,8 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: crytic/slither-action@v0.4.1
+      - uses: actions/checkout@v6
+      - uses: crytic/slither-action@v0.4.2
 ```
 
 ### Options
@@ -137,10 +137,10 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Run Slither
-        uses: crytic/slither-action@v0.4.1
+        uses: crytic/slither-action@v0.4.2
         id: slither
         with:
           sarif: results.sarif
@@ -174,8 +174,8 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: crytic/slither-action@v0.4.1
+      - uses: actions/checkout@v6
+      - uses: crytic/slither-action@v0.4.2
         with:
           target: 'src/'
 ```
@@ -209,10 +209,10 @@ jobs:
       security-events: write
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Run Slither
-      uses: crytic/slither-action@v0.4.1
+      uses: crytic/slither-action@v0.4.2
       id: slither
       with:
         node-version: 16
@@ -254,10 +254,10 @@ jobs:
       security-events: write
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Run Slither
-      uses: crytic/slither-action@v0.4.1
+      uses: crytic/slither-action@v0.4.2
       id: slither
       with:
         sarif: results.sarif
@@ -299,21 +299,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
           submodules: recursive
 
     - name: Set up Node
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
 
     - name: Install Yarn
       run: npm install --global yarn
 
     - name: Install Nix
-      uses: cachix/install-nix-action@v26
+      uses: cachix/install-nix-action@v31
 
     - name: Configure Cachix
-      uses: cachix/cachix-action@v14
+      uses: cachix/cachix-action@v16
       with:
         name: dapp
 
@@ -324,7 +324,7 @@ jobs:
       run: nix-shell --run 'make build'
 
     - name: Run Slither
-      uses: crytic/slither-action@v0.4.1
+      uses: crytic/slither-action@v0.4.2
       with:
         ignore-compile: true
 ```
@@ -349,10 +349,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Run Slither
-      uses: crytic/slither-action@v0.4.1
+      uses: crytic/slither-action@v0.4.2
       id: slither
       with:
         node-version: 16
@@ -360,7 +360,7 @@ jobs:
         slither-args: --checklist --markdown-root ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}/
 
     - name: Create/update checklist as PR comment
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       if: github.event_name == 'pull_request'
       env:
         REPORT: ${{ steps.slither.outputs.stdout }}
@@ -419,8 +419,8 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: crytic/slither-action@v0.4.1
+      - uses: actions/checkout@v6
+      - uses: crytic/slither-action@v0.4.2
         with:
           target: 'src/'
           slither-plugins: requirements-plugins.txt
